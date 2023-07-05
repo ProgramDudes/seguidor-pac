@@ -22,7 +22,7 @@ float Kp = 0.1; // .13
 
 float Ki = 0.00001;
 
-float Kd = 0.2; //1.08
+float Kd = 0.18; //1.08
 
 int maxspeedA = 255;
 
@@ -108,40 +108,23 @@ void PID_control() {
 
   int motorSpeedChange = P*Kp + I*Ki + D*Kd;
 
-  int motorSpeedA = velBaseA + motorSpeedChange;
+  int motorSpeedA = constrain(velBaseA + motorSpeedChange,0,maxspeedA);
 
-  int motorSpeedB = velBaseB - motorSpeedChange;
+  int motorSpeedB = constrain(velBaseB - motorSpeedChange,0,maxspeedB);
 
   digitalWrite(dirD, HIGH);
   digitalWrite(dirD2, LOW);
   digitalWrite(dirE, HIGH);
   digitalWrite(dirE2, LOW);
-  
-  if (motorSpeedA < 0) {
-    motorSpeedA *= -1;
-    digitalWrite(dirE, LOW);
-    digitalWrite(dirE2, HIGH);
-  }
-
-  if (motorSpeedB < 0) {
-    motorSpeedB *= -1;
-    digitalWrite(dirD, LOW);
-    digitalWrite(dirD2, HIGH);
-  }
 
   if (motorSpeedA<120&&motorSpeedA>0) motorSpeedA=120;
 
   if (motorSpeedB<120&&motorSpeedB>0) motorSpeedB=120;
-  
-  Serial.println();
-  Serial.print(motorSpeedA);
-  Serial.print(" | ");
-  Serial.println(motorSpeedB);
-  
+
   analogWrite(motorE, motorSpeedA);
   analogWrite(motorD, motorSpeedB);
   
-  if(error<=200&&error>=-200){
+  if(error<=300&&error>=-300){
     motorSpeedA=maxspeedA;
     motorSpeedB=maxspeedB;
   }
